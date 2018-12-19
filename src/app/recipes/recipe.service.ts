@@ -4,9 +4,13 @@ import { Recipe } from './recipe.model';
 import { Ingredient } from '../shared/ingredient.model';
 import { ShoppingListService } from '../shopping-list/shopping-list.service';
 import {Subject} from 'rxjs';
+import {Http} from '@angular/http';
+import {map} from 'rxjs/internal/operators';
 
 @Injectable()
 export class RecipeService {
+    public static ENDPOINT_URL: string = 'https://recipes-8b730.firebaseio.com/recipes.json';
+
     recipesChanged = new Subject<Recipe[]>();
 
     private recipes: Recipe[] = [
@@ -27,7 +31,7 @@ export class RecipeService {
             ])
     ];
 
-    constructor(private slService: ShoppingListService) {}
+    constructor(private slService: ShoppingListService, private http: Http) {}
 
     getRecipes() {
         return this.recipes.slice();
@@ -54,5 +58,38 @@ export class RecipeService {
     deleteRecipe(index: number) {
         this.recipes.splice(index, 1);
         this.recipesChanged.next(this.recipes.slice());
+    }
+
+    storeRecipes() {
+        return this.http.put(
+            RecipeService.ENDPOINT_URL,
+            this.recipes
+        );
+    }
+
+    setRecipes(recipes: Recipe[]) {
+        this.recipes = recipes;
+        this.recipesChanged.next(this.recipes.slice())
+    }
+
+    attachRecipes() {
+        return this.http.get(RecipeService.ENDPOINT_URL)
+            .pipe(map(
+                (response: Response) => {
+                    const recipes: Recipe[] = response.json();
+                    for (let recipe of recipes) {
+                        if (!recipe['ingredients']) {
+                            recipe['ingredients'] = [];
+                        }
+                    }
+
+                    return recipes;
+                }
+            ))
+            .subscribe(
+                (recipes: Recipe[]) => {
+                    this.setRecipes(recipes);
+                }
+            );
     }
 }
