@@ -2,6 +2,7 @@ import {Ingredient} from '../shared/ingredient.model';
 import {Subject} from 'rxjs';
 import {Http} from '@angular/http';
 import {Injectable} from '@angular/core';
+import {AuthService} from '../auth/auth.service';
 
 @Injectable()
 export class ShoppingListService {
@@ -14,7 +15,7 @@ export class ShoppingListService {
         new Ingredient('Ingredient2', 2)
     ];
 
-    constructor(private http: Http) {
+    constructor(private http: Http, private authService: AuthService) {
     }
 
     getIngredients() {
@@ -46,8 +47,10 @@ export class ShoppingListService {
     }
 
     storeIngredients() {
+        const token = this.authService.getToken();
+
         return this.http.put(
-            ShoppingListService.ENDPOINT_URL,
+            ShoppingListService.ENDPOINT_URL + '?auth=' + token,
             this.ingredients
         );
     }
@@ -58,7 +61,9 @@ export class ShoppingListService {
     }
 
     attachIngredients() {
-        return this.http.get(ShoppingListService.ENDPOINT_URL)
+        const token = this.authService.getToken();
+
+        return this.http.get(ShoppingListService.ENDPOINT_URL + '?auth=' + token)
             .subscribe(
                 (response: Response) => {
                     const ingredients: Ingredient[] = response.json();

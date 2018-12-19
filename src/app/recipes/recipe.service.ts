@@ -6,6 +6,7 @@ import { ShoppingListService } from '../shopping-list/shopping-list.service';
 import {Subject} from 'rxjs';
 import {Http} from '@angular/http';
 import {map} from 'rxjs/internal/operators';
+import {AuthService} from '../auth/auth.service';
 
 @Injectable()
 export class RecipeService {
@@ -31,7 +32,7 @@ export class RecipeService {
             ])
     ];
 
-    constructor(private slService: ShoppingListService, private http: Http) {}
+    constructor(private slService: ShoppingListService, private http: Http, private authService: AuthService) {}
 
     getRecipes() {
         return this.recipes.slice();
@@ -61,8 +62,10 @@ export class RecipeService {
     }
 
     storeRecipes() {
+        const token = this.authService.getToken();
+
         return this.http.put(
-            RecipeService.ENDPOINT_URL,
+            RecipeService.ENDPOINT_URL + '?auth=' + token,
             this.recipes
         );
     }
@@ -73,7 +76,9 @@ export class RecipeService {
     }
 
     attachRecipes() {
-        return this.http.get(RecipeService.ENDPOINT_URL)
+        const token = this.authService.getToken();
+
+        return this.http.get(RecipeService.ENDPOINT_URL + '?auth=' + token)
             .pipe(map(
                 (response: Response) => {
                     const recipes: Recipe[] = response.json();

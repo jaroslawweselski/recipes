@@ -1,6 +1,7 @@
 import {Component} from '@angular/core';
 import {ShoppingListService} from '../shopping-list/shopping-list.service';
 import {RecipeService} from '../recipes/recipe.service';
+import {AuthService} from '../auth/auth.service';
 
 @Component({
     selector: 'app-header',
@@ -9,7 +10,8 @@ import {RecipeService} from '../recipes/recipe.service';
 export class HeaderComponent {
     constructor(
         private shoppingListService: ShoppingListService,
-        private recipeService: RecipeService
+        private recipeService: RecipeService,
+        private authService: AuthService
     ) {}
 
     onSaveData() {
@@ -24,5 +26,9 @@ export class HeaderComponent {
     onGetData() {
         this.shoppingListService.attachIngredients();
         this.recipeService.attachRecipes();
+    }
+
+    onLogout() {
+        this.authService.logout();
     }
 }
