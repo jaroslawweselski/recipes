@@ -5,7 +5,7 @@ import { Ingredient } from '../shared/ingredient.model';
 import { ShoppingListService } from '../shopping-list/shopping-list.service';
 import {Subject} from 'rxjs';
 import {Http} from '@angular/http';
-import {map} from 'rxjs/internal/operators';
+import { map } from 'rxjs/operators';
 import {AuthService} from '../auth/auth.service';
 
 @Injectable()
@@ -80,8 +80,8 @@ export class RecipeService {
 
         return this.http.get(RecipeService.ENDPOINT_URL + '?auth=' + token)
             .pipe(map(
-                (response: Response) => {
-                    const recipes: Recipe[] = response.json();
+                (response) => {
+                    const recipes = response.json();
                     for (let recipe of recipes) {
                         if (!recipe['ingredients']) {
                             recipe['ingredients'] = [];
@@ -92,7 +92,7 @@ export class RecipeService {
                 }
             ))
             .subscribe(
-                (recipes: Recipe[]) => {
+                (recipes) => {
                     this.setRecipes(recipes);
                 }
             );

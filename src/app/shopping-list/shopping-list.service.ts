@@ -65,8 +65,8 @@ export class ShoppingListService {
 
         return this.http.get(ShoppingListService.ENDPOINT_URL + '?auth=' + token)
             .subscribe(
-                (response: Response) => {
-                    const ingredients: Ingredient[] = response.json();
+                (response) => {
+                    const ingredients = response.json();
                     this.setRecipes(ingredients);
                 }
             );
