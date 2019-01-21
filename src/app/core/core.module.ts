@@ -3,6 +3,9 @@ import {HomeComponent} from './home/home.component';
 import {SharedModule} from '../shared/shared.module';
 import {AppRoutingModule} from '../app-routing.module';
 import {NgModule} from '@angular/core';
+import {ShoppingListService} from '../shopping-list/shopping-list.service';
+import {AuthService} from '../auth/auth.service';
+import {RecipeService} from '../recipes/recipe.service';
 
 @NgModule({
     declarations: [
@@ -16,6 +19,11 @@ import {NgModule} from '@angular/core';
     exports: [
         AppRoutingModule,
         HeaderComponent
+    ],
+    providers: [
+        ShoppingListService,
+        RecipeService,
+        AuthService
     ]
 })
 export class CoreModule {}
