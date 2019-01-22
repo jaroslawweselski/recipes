@@ -4,9 +4,9 @@ import { Recipe } from './recipe.model';
 import { Ingredient } from '../shared/ingredient.model';
 import { ShoppingListService } from '../shopping-list/shopping-list.service';
 import {Subject} from 'rxjs';
-import {Http} from '@angular/http';
 import { map } from 'rxjs/operators';
 import {AuthService} from '../auth/auth.service';
+import {HttpClient} from '@angular/common/http';
 
 @Injectable()
 export class RecipeService {
@@ -32,7 +32,7 @@ export class RecipeService {
             ])
     ];
 
-    constructor(private slService: ShoppingListService, private http: Http, private authService: AuthService) {}
+    constructor(private slService: ShoppingListService, private httpClient: HttpClient, private authService: AuthService) {}
 
     getRecipes() {
         return this.recipes.slice();
@@ -61,11 +61,8 @@ export class RecipeService {
         this.recipesChanged.next(this.recipes.slice());
     }
 
-    storeRecipes() {
-        const token = this.authService.getToken();
-
-        return this.http.put(
-            RecipeService.ENDPOINT_URL + '?auth=' + token,
+    storeRecipes() {return this.httpClient.put(
+            RecipeService.ENDPOINT_URL,
             this.recipes
         );
     }
@@ -75,13 +72,9 @@ export class RecipeService {
         this.recipesChanged.next(this.recipes.slice())
     }
 
-    attachRecipes() {
-        const token = this.authService.getToken();
-
-        return this.http.get(RecipeService.ENDPOINT_URL + '?auth=' + token)
+    attachRecipes() {return this.httpClient.get<Recipe[]>(RecipeService.ENDPOINT_URL)
             .pipe(map(
-                (response) => {
-                    const recipes = response.json();
+                (recipes) => {
                     for (let recipe of recipes) {
                         if (!recipe['ingredients']) {
                             recipe['ingredients'] = [];
